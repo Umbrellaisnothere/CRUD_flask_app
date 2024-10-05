@@ -35,7 +35,7 @@ def getUsername(username):
 
 @app.route('/users')
 def getUsers():
-    users =[post.to_dict() for user in User.query.all()]
+    users =[user.to_dict() for user in User.query.all()]
     # print(users)
     return make_response(users, 200)
 
@@ -97,4 +97,4 @@ def post(id):
 #     return f"<h1>The number is {num}!</h1>"
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5500, debug=True)

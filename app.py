@@ -35,7 +35,7 @@ def getUsername(username):
 
 @app.route('/users')
 def getUsers():
-    users =[{"id": user.id, "username": user.username, "age": user.age, "email": user.email, "role": user.role} for user in User.query.all()]
+    users =[post.to_dict() for user in User.query.all()]
     # print(users)
     return make_response(users, 200)
 
@@ -50,13 +50,15 @@ def posts():
     if request.method == "POST":
         # POST => Creating a new record and inserting it into the database
         data = request.get_json()
+        if not data or 'content' not in data or 'user_id' not in data:
+            return make_response({"error": "Content and user_id are required"}, 400)
 
         # Create post instance then save it to the database
         new_post = Post(content=data['content'], user_id=data['user_id'])
         db.session.add(new_post)
         db.session.commit()
 
-        return make_response({"message": "Post created successfully"})
+        return make_response({"message": "Post created successfully"}, 201)
 
 @app.route('/posts/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def post(id):
@@ -65,7 +67,6 @@ def post(id):
         return make_response({"message": "No post found"}, 404)
     
     if request.method == 'GET':
-        
         return make_response(post.to_dict(), 200)
     
     if request.method == 'DELETE':
@@ -75,8 +76,11 @@ def post(id):
         return make_response({"message": "post deleted"}, 200)
     
     if request.method == 'PATCH':
-        pass
-
+        data = request.get_json()
+        if 'content' in data:
+            post.content = data['content']  # Update the content if provided
+            db.session.commit()
+            return make_response({"message": "Post updated successfully"}, 200)
 # => retrieve a single record from the database
 
 # PATCH => Update some record fields

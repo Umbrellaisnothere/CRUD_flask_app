@@ -31,16 +31,17 @@ class Profile(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     bio = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # username = db.Column(db.String(80), unique=True, nullable=False)
     # age = db.Column(db.Integer)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # profile = db.relationship('Profile', backref='user', cascade = 'all, delete-orphans')
 
 
 class Post(db.Model, SerializerMixin):
     __tablename__ = "posts"
     
+    serialize_rules = ("-user.posts", "-user.groups")
+
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(255))
     
